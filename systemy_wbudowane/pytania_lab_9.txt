@@ -1,0 +1,41 @@
+1. Pytanie 1. Jak adresujemy i kodujemy pozycję piksela i jego kolor na wyświetlacz
+LCD?
+Aby adresować pojedynczy piksel, należy określić jego położenie wzg. piksela piksela
+początkowego. Na przykład, aby określić pojedynczy piksel w (2, 7), użyj następującej
+sekwencji.
+ WriteSpiCommand(PASET); // Row address set (command 0x2B)
+ WriteSpiData(2); // startingx address
+ WriteSpiData(2); // ending x address (same as start)
+ WriteSpiCommand(CASET); // Column address set (command 0x2A)
+ WriteSpiData(7); // starting y address
+ WriteSpiData(7); // ending y address (same as start)
+Aby zająć się prostokątnym obszarem pikseli, po prostu określ lokalizację początkową i
+końcową na każdej osi, jak pokazano poniżej. Na przykład, aby zdefiniować prostokąt
+rysunku od (4, 3) do (11, 9), użyj następującej sekwencji.
+ WriteSpiCommand(PASET); // Row address set (command 0x2B)
+ WriteSpiData(4); // startingx address
+ WriteSpiData(11); // endingx address
+ WriteSpiCommand(CASET); // Column address set (command 0x2A)
+ WriteSpiData(3); // starting y address
+ WriteSpiData(9); // ending y address
+
+WriteSpiCommand(RAMWR);
+for(i = 0; i < ((w * h) / 2); i++) {
+ WriteSpiData((cColor >> 4) & 0xFF);
+ WriteSpiData(((cColor & 0xF) << 4) | ((cColor >> 8) & 0xF));
+ WriteSpiData(cColor & 0xFF);
+
+}
+
+2. Pytanie 2. W jaki sposób rozróżniamy instrukcję od danej wysyłanej do
+wyświetlacza LCD.
+
+do wysyłania instrukcji zerujemy bit 8 w pSPI->SPI_TDR
+do wysyłania danych ustawiamy bit 8 w pSPI->SPI_TDR
+
+ WriteSpiCommand(command) - sends a command byte to the LCD
+ WriteSpiData(data) - sends a data byte to the LCD
+
+3. Pytanie 3. W jaki sposób włączamy interfejs SPI0 do pracy?
+InitSpi();
+4. Pytanie 4. W jaki sposób budujemy funkcje graficzne, np. rysowanie linii?
